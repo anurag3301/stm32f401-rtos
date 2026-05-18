@@ -1,0 +1,4 @@
+*.o
+*.elf*
+.gdb*
+.cache
