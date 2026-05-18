@@ -1,6 +1,6 @@
 PROJ = main
 CPU ?= cortex-m4
-OBJ = boot.o
+OBJ = boot.o start.o
 
 OPENOCD_INTERFACE ?= interface/stlink.cfg
 OPENOCD_TARGET ?= target/stm32f4x.cfg
@@ -25,7 +25,7 @@ debug: $(PROJ).elf
 		-ex "target extended-remote localhost:3333" \
 		-ex "monitor reset halt" \
 		-ex "load" \
-		-ex "break reset_handler" \
+		-ex "break start" \
 		-ex "continue"
 
 %.o: %.S
