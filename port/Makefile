@@ -1,6 +1,29 @@
 PROJ = main
 CPU ?= cortex-m4
-OBJ = boot.o start.o
+FREERTOS_PATH = ../FreeRTOS-Kernel
+
+CFLAGS = \
+	-mcpu=$(CPU) \
+	-mthumb \
+	-mfpu=fpv4-sp-d16 \
+	-mfloat-abi=hard \
+	-ffreestanding \
+	-g
+
+LDFLAGS = \
+	-T map.ld \
+	-nostartfiles
+
+OBJ = boot.o \
+	  start.o \
+	  $(FREERTOS_PATH)/tasks.o \
+	  $(FREERTOS_PATH)/list.o \
+	  $(FREERTOS_PATH)/portable/MemMang/heap_4.o \
+	  $(FREERTOS_PATH)/portable/GCC/ARM_CM4F/port.o
+
+INC = -I$(FREERTOS_PATH)/include/ \
+	  -I$(FREERTOS_PATH)/portable/GCC/ARM_CM4F \
+	  -I./
 
 OPENOCD_INTERFACE ?= interface/stlink.cfg
 OPENOCD_TARGET ?= target/stm32f4x.cfg
@@ -29,15 +52,16 @@ debug: $(PROJ).elf
 		-ex "continue"
 
 %.o: %.S
-	arm-none-eabi-as -mcpu=$(CPU) -mthumb -g -c $< -o $@
+	arm-none-eabi-gcc $(CFLAGS) -c $< -o $@
 
 %.o: %.c
-	arm-none-eabi-gcc $(INC) -mcpu=$(CPU) -mthumb -g -c $< -o $@
+	arm-none-eabi-gcc $(INC) $(CFLAGS) -c $< -o $@
 
 $(PROJ).elf: $(OBJ)
-	arm-none-eabi-ld -T map.ld $^ -o $@
+	arm-none-eabi-gcc $(CFLAGS) $(LDFLAGS) $^ -o $@
 	arm-none-eabi-objdump -D -S $@ > $@.lst
 	arm-none-eabi-readelf -a $@ > $@.debug
 
 clean:
+	find .. -name "*.o" -delete
 	rm -f *.o *.elf *.lst *.debug

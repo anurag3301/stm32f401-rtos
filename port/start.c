@@ -1,8 +1,7 @@
-void anurag(){
-    int x = 10;
-}
+#include "FreeRTOS.h"
+#include "task.h"
 
 void start(){
-    anurag();
+    vTaskStartScheduler();
     return;
 }
