@@ -11,5 +11,6 @@
 #define configTOTAL_HEAP_SIZE                   0x1000 
 #define configCPU_CLOCK_HZ                      84000000 
 #define configTICK_RATE_HZ                      10
+#define INCLUDE_vTaskDelay                      1
 
 #endif

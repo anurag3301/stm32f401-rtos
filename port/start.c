@@ -3,9 +3,9 @@
 #include "stm32f4xx.h"
 
 static void vTask1(void *pvParameters){
-    volatile int a = 0;
     while(1){
-        a++;
+        GPIOA->ODR ^= (1 << 5);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -35,9 +35,19 @@ void init_mem(){
     }
 }
 
+void led_setup(){
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    GPIOA->MODER &= ~(GPIO_MODER_MODER5);
+    GPIOA->MODER |= GPIO_MODER_MODER5_0;
+    GPIOA->OTYPER &= ~(GPIO_OTYPER_OT5);
+    GPIOA->PUPDR  &= ~(GPIO_PUPDR_PUPD5);
+    GPIOA->BSRR = GPIO_BSRR_BS5;
+}
+
 void start(){
     
     init_mem();
+    led_setup();
 
     BaseType_t xReturn;
     xReturn = xTaskCreate(vTask1, "T1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
