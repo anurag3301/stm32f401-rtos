@@ -23,7 +23,7 @@ SECTIONS
         . = ALIGN(4);
         _edata = .;
 
-    } > FLASH AT > RAM
+    } > RAM AT > FLASH
 
     .bss : ALIGN(4) {
         _sbss = .;

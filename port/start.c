@@ -1,5 +1,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
+#include "stm32f4xx.h"
 
 static void vTask1(void *pvParameters){
     volatile int a = 0;

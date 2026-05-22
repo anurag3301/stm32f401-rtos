@@ -8,6 +8,7 @@ CFLAGS = \
 	-mfpu=fpv4-sp-d16 \
 	-mfloat-abi=hard \
 	-ffreestanding \
+	-DSTM32F401xE \
 	-g
 
 LDFLAGS = \
@@ -23,6 +24,8 @@ OBJ = boot.o \
 
 INC = -I$(FREERTOS_PATH)/include/ \
 	  -I$(FREERTOS_PATH)/portable/GCC/ARM_CM4F \
+	  -I./Drivers/CMSIS/Include \
+      -I./Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 	  -I./
 
 OPENOCD_INTERFACE ?= interface/stlink.cfg
