@@ -69,24 +69,8 @@ Understanding the full clock tree prevents hours of debugging subtle peripheral 
 
 The STM32F4 has four independent oscillators plus a PLL that can be driven by two of them.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        STM32F4 Clock Tree                       │
-│                                                                 │
-│  HSI (16 MHz RC) ──┬──────────────────────────→ SYSCLK mux     │
-│                    └──→ PLL input mux ──→ PLL ──→ PLLP ──→ SYSCLK mux │
-│                                               ├──→ PLLQ ──→ USB/SDIO   │
-│  HSE (4–26 MHz) ───┬──────────────────────────→ SYSCLK mux     │
-│                    └──→ PLL input mux                           │
-│                                                                 │
-│  SYSCLK ──→ AHB prescaler ──→ HCLK (CPU, DMA, AHB peripherals) │
-│                              ├──→ APB1 prescaler ──→ PCLK1     │
-│                              └──→ APB2 prescaler ──→ PCLK2     │
-│                                                                 │
-│  LSI (32 kHz RC) ─────────────────────────────→ RTC / IWDG     │
-│  LSE (32.768 kHz XTAL) ───────────────────────→ RTC            │
-└─────────────────────────────────────────────────────────────────┘
-```
+<img width="1107" height="781" alt="image" src="https://github.com/user-attachments/assets/1bcc4060-0549-460a-bcbd-d830782d13b3" />
+
 
 | Source | Frequency | Type | Use |
 |--------|-----------|------|-----|
