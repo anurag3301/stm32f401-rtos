@@ -44,9 +44,27 @@ void led_setup(){
     GPIOA->BSRR = GPIO_BSRR_BS5;
 }
 
+void clock_init(void){
+    RCC->CR |= RCC_CR_HSION;
+    while(!(RCC->CR & RCC_CR_HSIRDY));
+
+    RCC->PLLCFGR = (16 << RCC_PLLCFGR_PLLM_Pos) |
+                   (336 << RCC_PLLCFGR_PLLN_Pos) |
+                   (1 << RCC_PLLCFGR_PLLP_Pos) |
+                   RCC_PLLCFGR_PLLSRC_HSI;
+
+    RCC->CR |= RCC_CR_PLLON;
+    while(!(RCC->CR & RCC_CR_PLLRDY));
+    FLASH->ACR = FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_2WS;
+    RCC->CFGR &= ~RCC_CFGR_SW;
+    RCC->CFGR |= RCC_CFGR_SW_PLL;
+    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+}
+
 void start(){
     
     init_mem();
+    clock_init();
     led_setup();
 
     BaseType_t xReturn;
