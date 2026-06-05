@@ -78,7 +78,7 @@ void clock_init(void){
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 }
 
-void start(){
+extern "C" void start(){
     
     init_mem();
     clock_init();
