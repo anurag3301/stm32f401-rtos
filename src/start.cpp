@@ -1,11 +1,19 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stm32f4xx.h"
+#include "gpio.hpp"
 
 static void vTask1(void *pvParameters){
+    GPIO::Pin<GPIOC_BASE, 10> led(
+        GPIO::Mode::Output,
+        GPIO::OutputType::PushPull,
+        GPIO::Speed::Low,
+        GPIO::Pull::NoPUD
+    );
+
     while(1){
-        GPIOC->ODR ^= (1 << 10);
-        vTaskDelay(pdMS_TO_TICKS(100));
+        led.toggle();
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 
@@ -39,11 +47,6 @@ void init_mem(){
 void led_setup(){
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN | 
                     RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIODEN ;
-    GPIOC->MODER &= ~(GPIO_MODER_MODER10);
-    GPIOC->MODER |= GPIO_MODER_MODER10_0;
-    GPIOC->OTYPER &= ~(GPIO_OTYPER_OT10);
-    GPIOC->PUPDR  &= ~(GPIO_PUPDR_PUPD10);
-    GPIOC->BSRR = GPIO_BSRR_BS10;
 }
 
 void uart_setup(){
@@ -83,6 +86,10 @@ extern "C" void start(){
     init_mem();
     clock_init();
     led_setup();
+
+
+    // GPIO::Pin<GPIOC, 10> led(GPIO::Mode::Output, GPIO::OutputType::PushPull,
+    //                           GPIO::Speed::Low, GPIO::Pull::NoPUD);
 
     BaseType_t xReturn;
     xReturn = xTaskCreate(vTask1, "T1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
