@@ -44,10 +44,6 @@ void init_mem(){
 }
 
 
-void led_setup(){
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN | 
-                    RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIODEN ;
-}
 
 void uart_setup(){
     //  PA2 = USART2 TX
@@ -85,11 +81,7 @@ extern "C" void start(){
     
     init_mem();
     clock_init();
-    led_setup();
 
-
-    // GPIO::Pin<GPIOC, 10> led(GPIO::Mode::Output, GPIO::OutputType::PushPull,
-    //                           GPIO::Speed::Low, GPIO::Pull::NoPUD);
 
     BaseType_t xReturn;
     xReturn = xTaskCreate(vTask1, "T1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);

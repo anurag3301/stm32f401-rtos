@@ -28,16 +28,39 @@ enum class Pull : uint8_t {
     PullDown,
 };
 
+enum class AlternateFunction: uint8_t{
+    AF0, AF1, AF2, AF3, AF4, AF5, 
+    AF6, AF7, AF8, AF9, AF10, AF11, 
+    AF12, AF13, AF14, AF15, NONE
+};
+
+int8_t portToIdx(uint32_t portBase);
+void enableClock(uint32_t portBase);
+extern bool inuse[5][16];
+
 template<uint32_t PortBase, uint8_t PinNo>
 class Pin{
 public:
-    Pin(Mode mode, OutputType otype, Speed speed, Pull pull){
+    Pin(Mode mode, OutputType otype, Speed speed, 
+        Pull pull, AlternateFunction af = AlternateFunction::NONE)
+    {
+        inuseIdx = portToIdx(PortBase);
+        if(inuseIdx == -1 || inuse[inuseIdx][PinNo]){
+            return;
+        }
+        enableClock(PortBase);
         setMode(mode);
         setOutputType(otype);
         setSpeed(speed);
         setPull(pull);
+        setAlternateFunction(af);
+        inuse[inuseIdx][PinNo] = true;
     }
-    
+
+    ~Pin(){
+        inuse[inuseIdx][PinNo] = false;
+    }
+
     void setMode(Mode mode){
         port()->MODER &= ~(0b11u << PinNo*2);
         port()->MODER |= (static_cast<uint32_t>(mode) << PinNo*2);
@@ -58,6 +81,18 @@ public:
         port()->PUPDR |= (static_cast<uint32_t>(pull) << PinNo*2);
     }
 
+    void setAlternateFunction(AlternateFunction af){
+        if(af == AlternateFunction::NONE) return;
+        if(PinNo <= 7){
+            port()->AFR[0] &= ~(0b1111u << PinNo*4);
+            port()->AFR[0] |= (static_cast<uint32_t>(af) << PinNo*4);
+        }
+        else{
+            port()->AFR[1] &= ~(0b1111u << (PinNo-8)*4);
+            port()->AFR[1] |= (static_cast<uint32_t>(af) << (PinNo-8)*4);
+        }
+    }
+
     void set(){
         port()->BSRR = (1u << PinNo);
     }
@@ -70,10 +105,16 @@ public:
         port()->ODR ^= (1u << PinNo);
     }
 
+    bool get(){
+        return (port()->IDR & (1u << PinNo) != 0);
+    }
+
 private:
+    int8_t inuseIdx;
     static GPIO_TypeDef* port(){
         return reinterpret_cast<GPIO_TypeDef*>(PortBase);
     }
+
 };
 
 }
