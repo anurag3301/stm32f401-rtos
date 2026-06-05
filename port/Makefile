@@ -98,4 +98,5 @@ debug: $(PROJ).elf
 
 clean:
 	find . -name "*.o" -delete
+	find $(FREERTOS_PATH) -name "*.o" -delete
 	rm -f $(PROJ).elf $(PROJ).elf.lst $(PROJ).elf.debug
