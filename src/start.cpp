@@ -4,16 +4,13 @@
 #include "gpio.hpp"
 
 static void vTask1(void *pvParameters){
-    GPIO::Pin<GPIOC_BASE, 10> led(
-        GPIO::Mode::Output,
-        GPIO::OutputType::PushPull,
-        GPIO::Speed::Low,
-        GPIO::Pull::NoPUD
-    );
+    GPIO led(GPIOC_BASE, 10, GPIO::Mode::Output, 
+             GPIO::OutputType::PushPull,  GPIO::Speed::Low,  
+             GPIO::Pull::NoPUD);
 
     while(1){
         led.toggle();
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
@@ -48,16 +45,13 @@ void init_mem(){
 void uart_setup(){
     //  PA2 = USART2 TX
     //  PA3 = USART2 RX
-    GPIOA->MODER &= ~(GPIO_MODER_MODER2 | GPIO_MODER_MODER3);
-    GPIOA->MODER |= GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1;
-    GPIOA->OTYPER &= ~(GPIO_OTYPER_OT2);
-    GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPD2 | GPIO_PUPDR_PUPD3);
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD2_0 | GPIO_PUPDR_PUPD3_0;
-    GPIOA->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEED2 | GPIO_OSPEEDR_OSPEED3);
-    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED2_1 | GPIO_OSPEEDR_OSPEED3_1;
-    GPIOA->AFR[0] &= ~(GPIO_AFRL_AFSEL2 | GPIO_AFRL_AFSEL3);
-    GPIOA->AFR[0] |= GPIO_AFRL_AFSEL2_0 | GPIO_AFRL_AFSEL2_1 | GPIO_AFRL_AFSEL2_2 |
-                     GPIO_AFRL_AFSEL3_0 | GPIO_AFRL_AFSEL3_1 | GPIO_AFRL_AFSEL3_2;
+    GPIO tx (GPIOA_BASE, 2,  GPIO::Mode::Alternate, 
+             GPIO::OutputType::PushPull,  GPIO::Speed::High, 
+             GPIO::Pull::PullUp,  GPIO::AlternateFunction::AF7);
+    GPIO rx (GPIOA_BASE, 3,  GPIO::Mode::Alternate, 
+             GPIO::OutputType::OpenDrain, GPIO::Speed::High, 
+             GPIO::Pull::NoPUD,   GPIO::AlternateFunction::AF7);
+
 }
 
 void clock_init(void){

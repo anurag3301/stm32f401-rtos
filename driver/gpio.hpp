@@ -2,121 +2,67 @@
 #define __GPIO_HAL__
 #include <stm32f4xx.h>
 
-namespace GPIO{
-enum class Mode : uint8_t {
-    Input,
-    Output,
-    Alternate,
-    Analog
-};
-
-enum class OutputType : uint8_t {
-    PushPull,
-    OpenDrain
-};
-
-enum class Speed : uint8_t {
-    Low,
-    Medium,
-    High,
-    VeryHigh
-};
-
-enum class Pull : uint8_t {
-    NoPUD,
-    PullUp,
-    PullDown,
-};
-
-enum class AlternateFunction: uint8_t{
-    AF0, AF1, AF2, AF3, AF4, AF5, 
-    AF6, AF7, AF8, AF9, AF10, AF11, 
-    AF12, AF13, AF14, AF15, NONE
-};
-
-int8_t portToIdx(uint32_t portBase);
-void enableClock(uint32_t portBase);
-extern bool inuse[5][16];
-
-template<uint32_t PortBase, uint8_t PinNo>
-class Pin{
+class GPIO {
 public:
-    Pin(Mode mode, OutputType otype, Speed speed, 
-        Pull pull, AlternateFunction af = AlternateFunction::NONE)
-    {
-        inuseIdx = portToIdx(PortBase);
-        if(inuseIdx == -1 || inuse[inuseIdx][PinNo]){
-            return;
-        }
-        enableClock(PortBase);
-        setMode(mode);
-        setOutputType(otype);
-        setSpeed(speed);
-        setPull(pull);
-        setAlternateFunction(af);
-        inuse[inuseIdx][PinNo] = true;
-    }
+    enum class Mode : uint8_t {
+        Input     = 0,
+        Output    = 1,
+        Alternate = 2,
+        Analog    = 3,
+        None      = 0xFF
+    };
+    enum class OutputType : uint8_t {
+        PushPull  = 0,
+        OpenDrain = 1,
+        None      = 0xFF
+    };
+    enum class Speed : uint8_t {
+        Low      = 0,
+        Medium   = 1,
+        High     = 2,
+        VeryHigh = 3,
+        None     = 0xFF
+    };
+    enum class Pull : uint8_t {
+        NoPUD    = 0,
+        PullUp   = 1,
+        PullDown = 2,
+        None     = 0xFF
+    };
+    enum class AlternateFunction : uint8_t {
+        AF0  = 0,  AF1  = 1,  AF2  = 2,  AF3  = 3,
+        AF4  = 4,  AF5  = 5,  AF6  = 6,  AF7  = 7,
+        AF8  = 8,  AF9  = 9,  AF10 = 10, AF11 = 11,
+        AF12 = 12, AF13 = 13, AF14 = 14, AF15 = 15,
+        None = 0xFF
+    };
 
-    ~Pin(){
-        inuse[inuseIdx][PinNo] = false;
-    }
+    GPIO(uint32_t portBase, uint8_t pin,
+         Mode mode, OutputType otype, Speed speed,
+         Pull pull, AlternateFunction af = AlternateFunction::None);
+    ~GPIO();
 
-    void setMode(Mode mode){
-        port()->MODER &= ~(0b11u << PinNo*2);
-        port()->MODER |= (static_cast<uint32_t>(mode) << PinNo*2);
-    }
+    void setMode(Mode mode);
+    void setOutputType(OutputType otype);
+    void setSpeed(Speed speed);
+    void setPull(Pull pull);
+    void setAlternateFunction(AlternateFunction af);
 
-    void setOutputType(OutputType otype){
-        port()->OTYPER &= ~(1u << PinNo);
-        port()->OTYPER |= (static_cast<uint32_t>(otype) << PinNo);
-    }
-
-    void setSpeed(Speed speed){
-        port()->OSPEEDR &= ~(0b11u << PinNo*2);
-        port()->OSPEEDR |= (static_cast<uint32_t>(speed) << PinNo*2);
-    }
-
-    void setPull(Pull pull){
-        port()->PUPDR &= ~(0b11u << PinNo*2);
-        port()->PUPDR |= (static_cast<uint32_t>(pull) << PinNo*2);
-    }
-
-    void setAlternateFunction(AlternateFunction af){
-        if(af == AlternateFunction::NONE) return;
-        if(PinNo <= 7){
-            port()->AFR[0] &= ~(0b1111u << PinNo*4);
-            port()->AFR[0] |= (static_cast<uint32_t>(af) << PinNo*4);
-        }
-        else{
-            port()->AFR[1] &= ~(0b1111u << (PinNo-8)*4);
-            port()->AFR[1] |= (static_cast<uint32_t>(af) << (PinNo-8)*4);
-        }
-    }
-
-    void set(){
-        port()->BSRR = (1u << PinNo);
-    }
-
-    void reset(){
-        port()->BSRR = (1u << (PinNo + 16));
-    }
-
-    void toggle(){
-        port()->ODR ^= (1u << PinNo);
-    }
-
-    bool get(){
-        return (port()->IDR & (1u << PinNo) != 0);
-    }
+    void set();
+    void reset();
+    void toggle();
+    bool get();
 
 private:
-    int8_t inuseIdx;
-    static GPIO_TypeDef* port(){
-        return reinterpret_cast<GPIO_TypeDef*>(PortBase);
-    }
+    uint32_t  _portBase;
+    uint8_t   _pin;
+    int8_t    _inuseIdx;
 
+    GPIO_TypeDef* port() const;
+
+    static int8_t  portToIdx(uint32_t portBase);
+    static void    enableClock(uint32_t portBase);
+    static bool    inuse[5][16];
 };
-
-}
 
 #endif
