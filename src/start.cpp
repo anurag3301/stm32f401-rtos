@@ -25,10 +25,10 @@ void init_mem(){
 void uart_setup(){
     //  PA2 = USART2 TX
     //  PA3 = USART2 RX
-    GPIO tx (GPIOA_BASE, 2,  GPIO::Mode::Alternate, 
+    GPIO tx (GPIOA, 2,  GPIO::Mode::Alternate, 
              GPIO::OutputType::PushPull,  GPIO::Speed::High, 
              GPIO::Pull::PullUp,  GPIO::AlternateFunction::AF7);
-    GPIO rx (GPIOA_BASE, 3,  GPIO::Mode::Alternate, 
+    GPIO rx (GPIOA, 3,  GPIO::Mode::Alternate, 
              GPIO::OutputType::OpenDrain, GPIO::Speed::High, 
              GPIO::Pull::NoPUD,   GPIO::AlternateFunction::AF7);
 

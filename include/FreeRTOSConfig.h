@@ -11,6 +11,7 @@
 #define configCPU_CLOCK_HZ                      84000000 
 #define configTICK_RATE_HZ                      10
 #define INCLUDE_vTaskDelay                      1
+#define INCLUDE_vTaskDelete                     1
 
 #define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    5
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY            ( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - 4) )

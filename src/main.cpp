@@ -6,7 +6,7 @@ static GPIO* led    = nullptr;
 static GPIO* button = nullptr;
 
 static void vTask1(void *pvParameters){
-    GPIO led2 (GPIOC_BASE, 11, GPIO::Mode::Output);
+    GPIO led2 (GPIOC, 11, GPIO::Mode::Output);
     while(1){
         led2.toggle();
         vTaskDelay(pdMS_TO_TICKS(500));
@@ -21,8 +21,8 @@ static void vTask2(void *pvParameters){
 }
 
 void main(){
-    led    = new GPIO(GPIOC_BASE, 10, GPIO::Mode::Output);
-    button = new GPIO(GPIOC_BASE, 12, GPIO::Mode::Input,
+    led    = new GPIO(GPIOC, 10, GPIO::Mode::Output);
+    button = new GPIO(GPIOC, 12, GPIO::Mode::Input,
                       GPIO::OutputType::None,
                       GPIO::Speed::None,
                       GPIO::Pull::PullUp);
