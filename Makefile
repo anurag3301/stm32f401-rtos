@@ -27,10 +27,12 @@ CXXFLAGS := $(CFLAGS)               \
 	-fno-exceptions                 \
 	-fno-rtti                       \
 	-fno-unwind-tables              \
+	-fno-use-cxa-atexit				\
 	-fno-asynchronous-unwind-tables
 
 LDFLAGS := \
 	-T map.ld       \
+	-specs=nosys.specs \
 	-nostartfiles
 
 INC := \

@@ -16,6 +16,12 @@ SECTIONS
         _etext = .;
     } > FLASH
 
+    .ARM.exidx : {
+        __exidx_start = .;
+        *(.ARM.exidx*)
+        __exidx_end = .;
+    } > FLASH
+
     .data : ALIGN(4) {
         _sdata = .;
         _sidata = LOADADDR(.data);
@@ -31,6 +37,8 @@ SECTIONS
         . = ALIGN(4);
         _ebss = .;
     } > RAM
+
+    end = _ebss;
 
     __StackTop = ORIGIN(RAM) + LENGTH(RAM);
     PROVIDE(__stack = __StackTop - 4);
