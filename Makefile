@@ -48,7 +48,9 @@ SRC_C := \
 	$(FREERTOS_PATH)/tasks.c                        \
 	$(FREERTOS_PATH)/list.c                         \
 	$(FREERTOS_PATH)/portable/MemMang/heap_4.c      \
-	$(FREERTOS_PATH)/portable/GCC/ARM_CM4F/port.c
+	$(FREERTOS_PATH)/portable/GCC/ARM_CM4F/port.c	\
+	$(wildcard driver/*.c)							\
+	$(wildcard src/*.c) 
 
 SRC_CPP := \
 	$(wildcard src/*.cpp) \
