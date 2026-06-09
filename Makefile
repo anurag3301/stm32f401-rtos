@@ -51,7 +51,7 @@ SRC_C := \
 	$(FREERTOS_PATH)/portable/GCC/ARM_CM4F/port.c
 
 SRC_CPP := \
-	src/start.cpp \
+	$(wildcard src/*.cpp) \
 	$(wildcard driver/*.cpp)
 
 SRC_ASM := \

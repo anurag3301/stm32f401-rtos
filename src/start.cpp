@@ -1,23 +1,6 @@
-#include "FreeRTOS.h"
-#include "task.h"
-#include "stm32f4xx.h"
 #include "gpio.hpp"
 
-static GPIO* led    = nullptr;
-static GPIO* button = nullptr;
-
-static void vTask1(void *pvParameters){
-    while(1){
-        vTaskDelay(pdMS_TO_TICKS(5000));
-    }
-}
-
-static void vTask2(void *pvParameters){
-    volatile int b = 0;
-    while(1){
-        b++;
-    }
-}
+extern void main();
 
 extern uint32_t _sdata; 
 extern uint32_t _edata; 
@@ -37,7 +20,6 @@ void init_mem(){
         *dst++ = 0;
     }
 }
-
 
 
 void uart_setup(){
@@ -68,35 +50,10 @@ void clock_init(void){
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 }
-static void on_button_press(void* param) {
-    GPIO* led = static_cast<GPIO*>(param);
-    led->toggle(); 
-}
 
 extern "C" void start(){
-    
     init_mem();
     clock_init();
-
-    led    = new GPIO(GPIOC_BASE, 10, GPIO::Mode::Output);
-    button = new GPIO(GPIOC_BASE, 12, GPIO::Mode::Input,
-                      GPIO::OutputType::None,
-                      GPIO::Speed::None,
-                      GPIO::Pull::PullUp);
-
-    button->setInterruptCallback(GPIO::Edge::Fall, +[](void* param) {
-        static TickType_t last_tick = 0;
-        TickType_t now = xTaskGetTickCountFromISR();
-        if ((now - last_tick) > pdMS_TO_TICKS(200)) {
-            last_tick = now;
-            GPIO* led = static_cast<GPIO*>(param);
-            led->toggle();
-        }
-    }, led);
-
-    BaseType_t xReturn;
-    xReturn = xTaskCreate(vTask1, "T1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xReturn = xTaskCreate(vTask2, "T2", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    vTaskStartScheduler();
+    main();
     return;
 }
