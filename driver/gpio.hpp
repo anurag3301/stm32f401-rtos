@@ -1,6 +1,9 @@
 #ifndef __GPIO_HAL__
 #define __GPIO_HAL__
 #include <stm32f4xx.h>
+#include "common.hpp"
+
+extern "C" void EXTI_Handler(void);
 
 class GPIO {
 public:
@@ -37,9 +40,21 @@ public:
         None = 0xFF
     };
 
+    enum class Edge: uint8_t{
+        Fall,
+        Rise,
+        FallRise
+    };
+
     GPIO(uint32_t portBase, uint8_t pin,
-         Mode mode, OutputType otype, Speed speed,
-         Pull pull, AlternateFunction af = AlternateFunction::None);
+         Mode mode = Mode::Input, OutputType otype = OutputType::PushPull, 
+         Speed speed = Speed::Low, Pull pull = Pull::NoPUD, 
+         AlternateFunction af = AlternateFunction::None);
+    GPIO(const GPIO&) = delete;
+    GPIO& operator=(const GPIO&) = delete;
+    GPIO(GPIO&& other) noexcept;
+    GPIO& operator=(GPIO&& other) noexcept;
+
     ~GPIO();
 
     void setMode(Mode mode);
@@ -47,11 +62,13 @@ public:
     void setSpeed(Speed speed);
     void setPull(Pull pull);
     void setAlternateFunction(AlternateFunction af);
+    bool setInterruptCallback(Edge edge, void (*fn)(void*), void* param);
 
     void set();
     void reset();
     void toggle();
     bool get();
+    friend void EXTI_Handler(void);
 
 private:
     uint32_t  _portBase;
@@ -63,6 +80,7 @@ private:
     static int8_t  portToIdx(uint32_t portBase);
     static void    enableClock(uint32_t portBase);
     static bool    inuse[5][16];
+    static Callback interrupt_callbacks[16];
 };
 
 #endif
