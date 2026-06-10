@@ -1,6 +1,8 @@
+#include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "gpio.hpp"
+#include "uart.hpp"
 
 static GPIO* led    = nullptr;
 static GPIO* button = nullptr;
@@ -14,9 +16,12 @@ static void vTask1(void *pvParameters){
 }
 
 static void vTask2(void *pvParameters){
-    volatile int b = 0;
+    UART uart(USART2, {GPIOA, 2}, {GPIOA, 3});
+    uart.setStdout();
+    volatile uint16_t c = 1;
     while(1){
-        b++;
+        printf("Hello world: %d\n\r", c++);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 

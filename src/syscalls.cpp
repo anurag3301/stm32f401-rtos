@@ -1,6 +1,8 @@
 #include <sys/stat.h>
 #include <errno.h>
+#include "uart.hpp"
 
+extern "C"{
 int _close(int fd){
     (void)fd;
     return -1;
@@ -32,9 +34,7 @@ int _read(int fd, char *ptr, int len){
 }
 
 int _write(int fd, char *ptr, int len){
-    (void)fd;
-    (void)ptr;
-    (void)len;
+    UART::write_syscall(fd, ptr, len);
     return len;
 }
-
+}

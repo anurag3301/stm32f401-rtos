@@ -7,6 +7,7 @@ extern uint32_t _edata;
 extern uint32_t _sidata; 
 extern uint32_t _sbss; 
 extern uint32_t _ebss; 
+uint32_t SystemCoreClock = 84000000;
 
 void init_mem(){
     uint32_t *src = &_sidata;
@@ -19,19 +20,6 @@ void init_mem(){
     while(dst < &_ebss){
         *dst++ = 0;
     }
-}
-
-
-void uart_setup(){
-    //  PA2 = USART2 TX
-    //  PA3 = USART2 RX
-    GPIO tx (GPIOA, 2,  GPIO::Mode::Alternate, 
-             GPIO::OutputType::PushPull,  GPIO::Speed::High, 
-             GPIO::Pull::PullUp,  GPIO::AlternateFunction::AF7);
-    GPIO rx (GPIOA, 3,  GPIO::Mode::Alternate, 
-             GPIO::OutputType::OpenDrain, GPIO::Speed::High, 
-             GPIO::Pull::NoPUD,   GPIO::AlternateFunction::AF7);
-
 }
 
 void clock_init(void){
