@@ -39,9 +39,21 @@ void clock_init(void){
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 }
 
+static void pc13_init_high() {
+    RCC->AHB1ENR  |= RCC_AHB1ENR_GPIOCEN;
+    GPIOC->MODER  &= ~(3U << (13 * 2));
+    GPIOC->MODER  |=  (1U << (13 * 2)); // output
+    GPIOC->BSRR    =  (1U << 13);        // set (drive high)
+}
+
+extern "C" __attribute__((noreturn)) void fault_handler() {
+    GPIOC->BSRR = (1U << (13 + 16)); // reset (drive low)
+    while (1);
+}
+
 extern "C" void start(){
+    pc13_init_high();
     init_mem();
     clock_init();
     main();
-    return;
 }

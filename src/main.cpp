@@ -4,6 +4,15 @@
 #include "gpio.hpp"
 #include "uart.hpp"
 
+extern "C" void fault_handler();
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char *) {
+    fault_handler();
+}
+
+extern "C" void vApplicationMallocFailedHook() {
+    fault_handler();
+}
+
 static GPIO* led    = nullptr;
 static GPIO* button = nullptr;
 static UART* uart   = nullptr;

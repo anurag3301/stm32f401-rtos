@@ -2,15 +2,15 @@
 vector_table:
     .word __stack
     .word reset_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
-    .word default_handler
+    .word fault_handler     // NMI
+    .word fault_handler     // HardFault
+    .word fault_handler     // MemManage
+    .word fault_handler     // BusFault
+    .word fault_handler     // UsageFault
+    .word default_handler   // Reserved
+    .word default_handler   // Reserved
+    .word default_handler   // Reserved
+    .word default_handler   // Reserved
     .word vPortSVCHandler
     .word default_handler
     .word default_handler
