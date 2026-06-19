@@ -3,4 +3,4 @@
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
 [submodule "driver"]
 	path = driver
-	url = git@github.com:anurag3301/stm32f401-cpp-hal.git
+	url = https://github.com/anurag3301/stm32f401-cpp-hal.git
